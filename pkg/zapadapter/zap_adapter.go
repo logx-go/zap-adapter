@@ -43,7 +43,7 @@ type ZapAdapter struct {
 func (z *ZapAdapter) clone() *ZapAdapter {
 	return &ZapAdapter{
 		logger:          z.logger,
-		fields:          z.fields,
+		fields:          commons.CloneFieldMap(z.fields),
 		formatter:       z.formatter,
 		logLevelMap:     z.logLevelMap,
 		logLevelDefault: z.logLevelDefault,
