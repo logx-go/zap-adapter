@@ -50,15 +50,13 @@ func (z *ZapAdapter) clone() *ZapAdapter {
 	}
 }
 
-func (z *ZapAdapter) format(v ...any) (messageF string, fieldsZ []zapcore.Field) {
+func (z *ZapAdapter) format(v ...any) string {
 	if len(v) < 1 {
 		if z.formatter == nil {
-			return "", z.convertZapFields(z.fields)
+			return ""
 		}
 
-		m, f := z.formatter.Format("", z.fields)
-
-		return m, z.convertZapFields(f)
+		return z.formatter.Format("", z.fields)
 	}
 
 	msg := fmt.Sprintf(`%v`, v[0])
@@ -79,12 +77,10 @@ func (z *ZapAdapter) format(v ...any) (messageF string, fieldsZ []zapcore.Field)
 	}
 
 	if z.formatter == nil {
-		return msg, z.convertZapFields(fields)
+		return msg
 	}
 
-	m, f := z.formatter.Format(msg, fields)
-
-	return m, z.convertZapFields(f)
+	return z.formatter.Format(msg, fields)
 }
 
 func (z *ZapAdapter) convertZapFields(fields map[string]any) []zapcore.Field {
@@ -115,48 +111,42 @@ func (z *ZapAdapter) Fatal(v ...any) {
 	c := z.clone()
 	c.fields = commons.SetCallerInfo(1, false, c.fields, logx.FieldNameCallerFunc, logx.FieldNameCallerFile, logx.FieldNameCallerLine)
 
-	msgZ, fieldsZ := c.format(v...)
-	c.logger.Fatal(msgZ, fieldsZ...)
+	c.logger.Fatal(c.format(v...), c.convertZapFields(c.fields)...)
 }
 
 func (z *ZapAdapter) Panic(v ...any) {
 	c := z.clone()
 	c.fields = commons.SetCallerInfo(1, false, c.fields, logx.FieldNameCallerFunc, logx.FieldNameCallerFile, logx.FieldNameCallerLine)
 
-	msgZ, fieldsZ := c.format(v...)
-	c.logger.Panic(msgZ, fieldsZ...)
+	c.logger.Panic(c.format(v...), c.convertZapFields(c.fields)...)
 }
 
 func (z *ZapAdapter) Print(v ...any) {
 	c := z.clone()
 	c.fields = commons.SetCallerInfo(1, false, c.fields, logx.FieldNameCallerFunc, logx.FieldNameCallerFile, logx.FieldNameCallerLine)
 
-	msgZ, fieldsZ := c.format(v...)
-	c.logger.Log(c.convertZapLevel(c.fields), msgZ, fieldsZ...)
+	c.logger.Log(c.convertZapLevel(c.fields), c.format(v...), c.convertZapFields(c.fields)...)
 }
 
 func (z *ZapAdapter) Fatalf(format string, v ...any) {
 	c := z.clone()
 	c.fields = commons.SetCallerInfo(1, false, c.fields, logx.FieldNameCallerFunc, logx.FieldNameCallerFile, logx.FieldNameCallerLine)
 
-	msgZ, fieldsZ := c.format(fmt.Sprintf(format, v...))
-	c.logger.Fatal(msgZ, fieldsZ...)
+	c.logger.Fatal(c.format(fmt.Sprintf(format, v...)), c.convertZapFields(c.fields)...)
 }
 
 func (z *ZapAdapter) Panicf(format string, v ...any) {
 	c := z.clone()
 	c.fields = commons.SetCallerInfo(1, false, c.fields, logx.FieldNameCallerFunc, logx.FieldNameCallerFile, logx.FieldNameCallerLine)
 
-	msgZ, fieldsZ := c.format(fmt.Sprintf(format, v...))
-	c.logger.Panic(msgZ, fieldsZ...)
+	c.logger.Panic(c.format(fmt.Sprintf(format, v...)), c.convertZapFields(c.fields)...)
 }
 
 func (z *ZapAdapter) Printf(format string, v ...any) {
 	c := z.clone()
 	c.fields = commons.SetCallerInfo(1, false, c.fields, logx.FieldNameCallerFunc, logx.FieldNameCallerFile, logx.FieldNameCallerLine)
 
-	msgZ, fieldsZ := c.format(fmt.Sprintf(format, v...))
-	c.logger.Log(c.convertZapLevel(c.fields), msgZ, fieldsZ...)
+	c.logger.Log(c.convertZapLevel(c.fields), c.format(fmt.Sprintf(format, v...)), c.convertZapFields(c.fields)...)
 }
 
 func (z *ZapAdapter) Debug(v ...any) {
