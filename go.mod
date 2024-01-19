@@ -3,7 +3,7 @@ module github.com/logx-go/zap-adapter
 go 1.20
 
 require (
-	github.com/logx-go/commons v0.0.10
+	github.com/logx-go/commons v0.0.12
 	github.com/logx-go/contract v0.0.9
 	go.uber.org/zap v1.26.0
 )
