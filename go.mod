@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/logx-go/commons v0.0.10
-	github.com/logx-go/contract v0.0.7
+	github.com/logx-go/contract v0.0.9
 	go.uber.org/zap v1.25.0
 )
 
